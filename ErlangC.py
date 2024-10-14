@@ -12,5 +12,3 @@ def ErlangC(c, A):
     denominatore = risultato_sommatoria + (pow(A,c) / math.factorial(c)) * intermezzo
 
     return numeratore / denominatore
-    
-
