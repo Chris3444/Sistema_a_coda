@@ -20,7 +20,7 @@ def main():
     print("P_queue: ", P_queue)
     
     Lq = P_queue * rho/(1-rho)                      # average number of packets in the queue
-    Lx = c*rho                                      # TODO: trovare cosa sia Lx 
+    Lx = c*rho                                      # Lx-> numero medio di clienti nel sistema 
     Ls= Lq+Lx                                       # average number of packets in the system
     Wq = Lq/y                                       # average time a packet spends in the queue
     Ws = Ls/y                                       # average time a packet spends in the system
