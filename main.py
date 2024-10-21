@@ -6,6 +6,11 @@ import numpy
 import plotly.express as px #? matplotlib 
 import asyncio #chemicke
 
+# potrebbero essere utili 
+import event
+import queue
+
+
 # LIBRERIE CUSTOM #
 from ErlangC import ErlangC 
 
