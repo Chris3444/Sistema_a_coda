@@ -1,13 +1,11 @@
-# LIBRERIE ESTERNE #
-import simpy 
-import random 
+# EXTERNAL LIBRARY #
 import time      
-from numpy import random, unique
+from numpy import random
 import plotly.express as px #? matplotlib 
-import asyncio #chemicke (events & queue)
+import asyncio #whatmickis (events & queue)
 
 
-# LIBRERIE CUSTOM #
+# CUSTOM LIBRARY #
 from ErlangC import ErlangC 
 
 def main():    
@@ -20,7 +18,7 @@ def main():
     print("P_queue: ", P_queue)
     
     Lq = P_queue * rho/(1-rho)                      # average number of packets in the queue
-    Lx = c*rho                                      # Lx-> numero medio di clienti nel sistema 
+    Lx = c*rho                                      # average number of customers in the system 
     Ls= Lq+Lx                                       # average number of packets in the system
     Wq = Lq/y                                       # average time a packet spends in the queue
     Ws = Ls/y                                       # average time a packet spends in the system
