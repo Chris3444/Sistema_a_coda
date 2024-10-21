@@ -2,13 +2,9 @@
 import simpy 
 import random 
 import time      
-import numpy
+from numpy import random, unique
 import plotly.express as px #? matplotlib 
-import asyncio #chemicke
-
-# potrebbero essere utili 
-import event
-import queue
+import asyncio #chemicke (events & queue)
 
 
 # LIBRERIE CUSTOM #
@@ -29,9 +25,11 @@ def main():
     Wq = Lq/y                                       # average time a packet spends in the queue
     Ws = Ls/y                                       # average time a packet spends in the system
 
+    test = random.poisson(mu, 100)
     
 # TODO: implementare la visualizzazione dei risultati
-#    fig =  px.bar(x=["Lq", "Lx", "Ls", "Wq", "Ws"], y=[Lq, Lx, Ls, Wq, Ws], title="Performance Measures")
+# Visualizzazione poissoniana
+#    fig =  px.histogram(test, title="distribuzione")
 #    fig.show()    
 
 
