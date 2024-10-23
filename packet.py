@@ -16,14 +16,11 @@ class Packet:
 
     # SETTERS #
     def setQueueTime(self, queue_time):
-        self.queue_time = queue_time - self.initial_time
+        self.queue_time = queue_time - self.initial_time - self.arrival_time
 
-    def setServiceTime(self, service_time):
-        self.service_time = service_time - self.initial_time - self.queue_time
-    
     def setDepartureTime(self, departure_time):
         self.departure_time = departure_time  - self.initial_time
-        self.setServiceTime()
+        self.service_time = self.departure_time - self.queue_time 
 
     # GETTERS #
     def getID(self):
