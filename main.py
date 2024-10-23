@@ -7,11 +7,11 @@ import asyncio #whatmickis (events & queue)
 
 # CUSTOM LIBRARY #
 from ErlangC import ErlangC 
-
+#TODO: Non è giusto Wq e Ws, son completamente sbagliati
 def main():    
-    y = 100 #(ms)                                   # average arrival rate
-    mu = 5  #(ms)                                   # average service rate
-    c = int(input("Input number of servers:"))      # number of servers
+    y = 50 #(ms)                                   # average arrival rate
+    mu = 2  #(ms)                                   # average service rate
+    c = 20     # number of servers
     rho = y/(c*mu)                                  # server utilization
     A = c*rho                                       # traffic intensity
     P_queue = ErlangC(c, A)                         # probability of queueing
@@ -22,7 +22,8 @@ def main():
     Ls= Lq+Lx                                       # average number of packets in the system
     Wq = Lq/y                                       # average time a packet spends in the queue
     Ws = Ls/y                                       # average time a packet spends in the system
-
+    print("Wq: ", Wq)
+    print("Ws: ", Ws)
     test = random.poisson(mu, 100)
     
 # TODO: implementare la visualizzazione dei risultati

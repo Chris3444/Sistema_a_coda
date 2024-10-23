@@ -4,8 +4,8 @@ from numpy import random
 import asyncio #whatmickis (events & queue)
 from packet import Packet
 
-mu = 50
-y = 2
+y = 50
+mu = 2
 c = 20
 queue = asyncio.Queue()
 packet_array = []
@@ -23,12 +23,12 @@ def getMediumQueueTime(packet_array):
     return tot_time/len(packet_array)
 
 #Producer for mu packet per second
-async def packet_creator(mu):
+async def packet_creator(y):
     initial_time = time.time()
     counter = 0
     while True:
         #random medium time to create a packet 
-        await asyncio.sleep(random.poisson(1/mu))
+        await asyncio.sleep(random.poisson(1/y))
         packet = Packet(counter, initial_time)
         #put packet in queue
         await queue.put(packet)
@@ -36,14 +36,14 @@ async def packet_creator(mu):
         counter += 1
 
 #Server that process packet with rate y
-async def server(y, server_id):
+async def server(mu, server_id):
     while True:
         
         #get packet from queue
         packet = await queue.get()
         packet.setQueueTime(time.time())
         #random medium time to process a packet
-        await asyncio.sleep(random.poisson(1/y))
+        await asyncio.sleep(random.poisson(1/mu))
         packet.setDepartureTime(time.time())
         print(f"Server: {server_id} processed packet: {packet.getID()} with service time: {packet.getServiceTime()} and queuTime: {packet.getQueueTime()}")
         packet_array.append(packet)
@@ -52,8 +52,8 @@ async def server(y, server_id):
 async def main():
     #start producer and server
     
-    packet_creator_task = asyncio.create_task(packet_creator(mu))
-    server_task = [asyncio.create_task(server(y, i+1)) for i in range(c)]
+    packet_creator_task = asyncio.create_task(packet_creator(y))
+    server_task = [asyncio.create_task(server(mu, i+1)) for i in range(c)]
     
     #time of simulation
     await asyncio.sleep(30)
