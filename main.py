@@ -11,20 +11,25 @@ from ErlangC import ErlangC
 def main():    
     y = 50 #(ms)                                   # average arrival rate
     mu = 2  #(ms)                                   # average service rate
-    c = 20     # number of servers
-    rho = y/(c*mu)                                  # server utilization
-    A = c*rho                                       # traffic intensity
+    c = 3    # number of servers
+    rho = 0.1                                  # server utilization
+    A = c * rho                                       # traffic intensity
     P_queue = ErlangC(c, A)                         # probability of queueing
     print("P_queue: ", P_queue)
     
-    Lq = P_queue * rho/(1-rho)                      # average number of packets in the queue
+    Lq = P_queue * (rho/(1-rho))                  # average number of packets in the queue
     Lx = c*rho                                      # average number of customers in the system 
     Ls= Lq+Lx                                       # average number of packets in the system
     Wq = Lq/y                                       # average time a packet spends in the queue
     Ws = Ls/y                                       # average time a packet spends in the system
     print("Wq: ", Wq)
     print("Ws: ", Ws)
+    print("LS: ", Ls)
+    print("Lq: ", Lq)
     test = random.poisson(mu, 100)
+
+    print("\n")
+    print(c*mu*Ws)
     
 # TODO: implementare la visualizzazione dei risultati
 # Visualizzazione poissoniana
