@@ -10,6 +10,13 @@ c = 20
 queue = asyncio.Queue()
 packet_array = []
 
+packet_array_t = []
+
+n_packet_queue_t = [] # add (queuesize) everi t time
+# median = sumall(n_packet_queue_t) / len(array)
+
+n_packet_sistem = [] # add (len (packet_array_t) ) rvery t time
+
 def getMedianTime(packet_array):
     tot_time = 0
     for packet in packet_array:
@@ -30,6 +37,7 @@ async def packet_creator(y):
         #random medium time to create a packet 
         await asyncio.sleep(random.poisson(1/y))
         packet = Packet(counter, initial_time)
+        packet_array_t.append(packet)
         #put packet in queue
         await queue.put(packet)
         print(f"Created packet {packet.getID()}")
@@ -47,24 +55,28 @@ async def server(mu, server_id):
         packet.setDepartureTime(time.time())
         print(f"Server: {server_id} processed packet: {packet.getID()} with service time: {packet.getServiceTime()} and queuTime: {packet.getQueueTime()}")
         packet_array.append(packet)
+        packet_array_t.pop()
         
 
 async def main():
     #start producer and server
-    
+    sim_time = 10
     packet_creator_task = asyncio.create_task(packet_creator(y))
     server_task = [asyncio.create_task(server(mu, i+1)) for i in range(c)]
     
     #time of simulation
-    await asyncio.sleep(30)
+    await asyncio.sleep(sim_time)
     #cancel producer and server
     packet_creator_task.cancel()
     queuesize = queue.qsize()
     for task in server_task:
         task.cancel()
+    medium_packet = (len(packet_array)+queuesize)/sim_time
+    mediumqueue = queuesize/sim_time
     print("Simulation ended with ", len(packet_array), " packets processed and there are ", queuesize, " packets in queue")
     print("The average time a packet spends in the system is: ", getMedianTime(packet_array))
     print("The average time a packet spends in the queue is: ", getMediumQueueTime(packet_array))
+    print("The average number of packets in the system is ", medium_packet)
 asyncio.run(main())
 
 
