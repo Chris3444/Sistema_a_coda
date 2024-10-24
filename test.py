@@ -4,9 +4,9 @@ from numpy import random
 import asyncio #whatmickis (events & queue)
 from packet import Packet
 
-y = 50
-mu = 2
-c = 20
+y = 50 # (n) - packets/second           # average arrival rate
+mu = 2 # (s) - packets/second           # average service rate
+c = 20                                  # number of servers
 
 queue = asyncio.Queue()
 packet_array = []
