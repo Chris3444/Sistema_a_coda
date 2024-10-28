@@ -1,7 +1,7 @@
 # EXTERNAL LIBRARY #
 import time      
 from numpy import random
-import plotly.express as px #? matplotlib 
+#import plotly.express as px #? matplotlib 
 import asyncio #whatmickis (events & queue)
 
 
@@ -9,10 +9,10 @@ import asyncio #whatmickis (events & queue)
 from ErlangC import ErlangC 
 #TODO: Non è giusto Wq e Ws, son completamente sbagliati
 def main():    
-    y = 50 #(ms)                                   # average arrival rate
-    mu = 2  #(ms)                                   # average service rate
-    c = 3    # number of servers
-    rho = 0.1                                  # server utilization
+    y = 13.89 #(ms)                                   # average arrival rate
+    mu = 16.6  #(ms)                                   # average service rate
+    c = 2   # number of servers
+    rho = y/(c*mu )                                # server utilization
     A = c * rho                                       # traffic intensity
     P_queue = ErlangC(c, A)                         # probability of queueing
     print("P_queue: ", P_queue)

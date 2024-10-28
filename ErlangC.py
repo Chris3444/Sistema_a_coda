@@ -2,7 +2,7 @@ import math
 
 # implementazione della C di Erlang
 def ErlangC(c, A): 
-    intermezzo = (c / (c - A)) #valore parziale per il calcolo di numeratore e denominatore
+    intermezzo = (1 / (1 - A/c)) #valore parziale per il calcolo di numeratore e denominatore
     numeratore = (math.pow(A, c) / math.factorial(c)) * intermezzo
     
     risultato_sommatoria = 0
