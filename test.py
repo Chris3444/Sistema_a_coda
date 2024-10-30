@@ -3,8 +3,11 @@ import time
 from numpy import random 
 import asyncio #whatmickis (events & queue)
 from packet import Packet
+import plotly.express as px
 
-y = 50 # (n) - packets/second           # average arrival rate
+from Probability_functions import *
+
+lamb = 50 # (n) - packets/second           # average arrival rate
 mu = 2 # (s) - packets/second           # average service rate
 c = 20                                  # number of servers
 
@@ -68,7 +71,7 @@ async def getMediumPacket():
 async def main():
     #start producer and server
     sim_time = 10
-    packet_creator_task = asyncio.create_task(packet_creator(y))
+    packet_creator_task = asyncio.create_task(packet_creator(lamb))
     server_task = [asyncio.create_task(server(mu, i+1)) for i in range(c)]
     medium_packet_task = asyncio.create_task(getMediumPacket())
     
@@ -88,23 +91,28 @@ async def main():
     queue_tot = 0
     for n in n_packet_queue_t:
         queue_tot += n
-    mediumqueue = queue_tot/len(n_packet_queue_t)
+    mediumqueue = queue_tot / len(n_packet_queue_t)
 
     #calculate medium number of packet in the system
     packet_tot = 0
     for n in n_packet_sistem:
         packet_tot += n
     medium_packet = packet_tot / len(n_packet_sistem)
-    
+
+
     print("Simulation ended with ", len(packet_array), " packets processed and there are ", queuesize, " packets in queue")
     print("The average time a packet spends in the system is: ", getMedianTime(packet_array))
-    print("The average time a packet spends in the queue is: ", getMediumQueueTime(packet_array))
-    
+    print("The average time a packet spends in the queue is: ", getMediumQueueTime(packet_array))    
     print("\n")
     print("The average number of packets in the queue is ", mediumqueue)
     print("The average number of packets in the system is ", medium_packet)
 
+    p_k_array = []
+    for k in range(1,5):
+        p_k_array(i) = Pk(lamb, mu, k, c)
 
+    fig =  px.histogram(x = range(1,5), y = p_k_array, title="distribuzione")
+    fig.show()   
 
 asyncio.run(main())
 
