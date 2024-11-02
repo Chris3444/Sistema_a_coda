@@ -10,7 +10,7 @@ from Probability_functions import *
 lamb = 13.89 # (n) - packets/second           # average arrival rate
 mu = 16.6 # (s) - packets/second           # average service rate
 c = 2                                  # number of servers
-
+waiting_arrivals = 0
 queue = asyncio.Queue()
 packet_array = []
 
@@ -43,6 +43,9 @@ async def packet_creator(y):
         packet = Packet(counter, initial_time)
         packet_array_t.append(packet)
         #put packet in queue
+        if not queue.empty():
+            global waiting_arrivals
+            waiting_arrivals += 1
         await queue.put(packet)
         print(f"Created packet {packet.getID()}")
         counter += 1
@@ -70,7 +73,7 @@ async def getMediumPacket():
 
 async def main():
     #start producer and server
-    sim_time = 30
+    sim_time = 10
     packet_creator_task = asyncio.create_task(packet_creator(lamb))
     server_task = [asyncio.create_task(server(mu, i+1)) for i in range(c)]
     medium_packet_task = asyncio.create_task(getMediumPacket())
@@ -98,7 +101,7 @@ async def main():
     for n in n_packet_sistem:
         packet_tot += n
     medium_packet = packet_tot / len(n_packet_sistem)
-
+    P_queue = waiting_arrivals / len(packet_array)
 
     print("Simulation ended with ", len(packet_array), " packets processed and there are ", queuesize, " packets in queue")
     print("The average time a packet spends in the system is: ", getMedianTime(packet_array))
@@ -106,11 +109,12 @@ async def main():
     print("\n")
     print("The average number of packets in the queue is ", mediumqueue)
     print("The average number of packets in the system is ", medium_packet)
-
+    print("P_queue:", P_queue)
+    
     import plotly.graph_objects as go
 
     # Calculate Ls and Lq over a range of rho values
-    rho_values = [i/100 for i in range(1, 100)]
+    rho_values = [i/10 for i in range(1, 10)]
     Ls_values = []
     Lq_values = []
 

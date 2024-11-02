@@ -54,18 +54,19 @@ def main():
     
 
     # Create the plot 
-    fig = go.Figure()
+    time_plot = go.Figure()
     for c in c_values:  
-        fig.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}'))
-        fig.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f'Wq, c = {c}'))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}'))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f'Wq, c = {c}'))
 
-    fig.update_layout(
+    time_plot.update_layout(
         title="Ws and Wq over rho",
         xaxis_title="rho",
         yaxis_title="Value",
-        legend_title="Legend"
+        legend_title="Legend",
+        yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
-    # fig.show()
+    time_plot.show()
 
     # Ls AND Lq PLOT OVER RHO
     Ls_values = [[],[],[]]
@@ -79,18 +80,19 @@ def main():
             Lq_values[c-1].append(Lq)
     
     # Create the plot
-    fig2 = go.Figure()
+    packets_plot = go.Figure()
     for c in c_values:  
-        fig2.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}'))
-        fig2.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}'))
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}'))
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}'))
 
-    fig2.update_layout(
+    packets_plot.update_layout(
         title="Ls and Lq over rho",
         xaxis_title="rho",
         yaxis_title="Value",
-        legend_title="Legend"
+        legend_title="Legend",
+        yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
-    # fig2.show()
+    packets_plot.show()
 
     # Pk PLOT OVER K
     fig3 = go.Figure()
@@ -98,8 +100,7 @@ def main():
     pK_values = [[],[],[]]
     for c in c_values:
         for i in range(k+1):
-            pK_values[c-1].append(Pk(lamb, mu, i, c, 0.5))
-    
+            pK_values[c-1].append(Pk(i, c, 0.5))   
         
     for i in range(3):  
         fig3.add_trace(go.Bar(x=list(range(k + 1)), y= pK_values[i], name=f'P_queue, c = {i+1}'))
@@ -110,8 +111,7 @@ def main():
         yaxis_title="Pk",
         legend_title="Legend"
     )
-    
-    fig3.show()
+    #fig3.show()
 
 
 # TODO: implementare la visualizzazione dei risultati
