@@ -14,26 +14,28 @@ def main():
     lamb = 13.89 #(ms)                                   # average arrival rate
     mu = 16.6  #(ms)                                   # average service rate
     c = 2   # number of servers
-    rho = 0.5  # lamb/(c*mu )                                # server utilization
+    rho = lamb / (c*mu)                               # server utilization
     A = c * rho                                       # traffic intensity
     P_queue = ErlangC(c, A)                         # probability of queueing
     print("P_queue: ", P_queue)
     
     Lq = P_queue * (rho/(1-rho))                  # average number of packets in the queue
-    Lx = c*rho                                      # average number of customers in the system 
-    Ls= Lq+Lx                                       # average number of packets in the system
-    Wq = Lq/lamb                                       # average time a packet spends in the queue
-    Ws = Ls/lamb                                       # average time a packet spends in the system
-    P_k = Pk(lamb, mu, k, c)
+    Lx = c * rho                                      # average number of customers in the system 
+    Ls= Lq + Lx                                       # average number of packets in the system
+    Ws = (ErlangC(c, c * rho) + c * (1 - rho)) / (mu * 30 * (1 - rho))                                     # average time a packet spends in the queue
+    Wq = (ErlangC(c, c*rho)) / (mu* 30*(1-rho))
+   # Ws = Ls / lamb   
+   # Ws = Wq + (1/mu)                                    # average time a packet spends in the system
+   # P_k = Pk(lamb, mu, k, c)
 
     print("Wq: ", Wq)
     print("Ws: ", Ws)
     print("LS: ", Ls)
     print("Lq: ", Lq)
-    print("Pk: ", P_k)
+   # print("Pk: ", P_k)
     test = random.poisson(mu, 100)
 
-    print("\n")
+    print("")
     print(c*mu*Ws)
     
 # TODO: implementare la visualizzazione dei risultati

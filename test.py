@@ -7,9 +7,9 @@ import plotly.express as px
 
 from Probability_functions import *
 
-lamb = 50 # (n) - packets/second           # average arrival rate
-mu = 2 # (s) - packets/second           # average service rate
-c = 20                                  # number of servers
+lamb = 13.89 # (n) - packets/second           # average arrival rate
+mu = 16.6 # (s) - packets/second           # average service rate
+c = 2                                  # number of servers
 
 queue = asyncio.Queue()
 packet_array = []
@@ -70,7 +70,7 @@ async def getMediumPacket():
 
 async def main():
     #start producer and server
-    sim_time = 10
+    sim_time = 30
     packet_creator_task = asyncio.create_task(packet_creator(lamb))
     server_task = [asyncio.create_task(server(mu, i+1)) for i in range(c)]
     medium_packet_task = asyncio.create_task(getMediumPacket())
@@ -107,13 +107,43 @@ async def main():
     print("The average number of packets in the queue is ", mediumqueue)
     print("The average number of packets in the system is ", medium_packet)
 
+    import plotly.graph_objects as go
+
+    # Calculate Ls and Lq over a range of rho values
+    rho_values = [i/100 for i in range(1, 100)]
+    Ls_values = []
+    Lq_values = []
+
+    for rho in rho_values:
+        Ls = (lamb / mu) / (1 - (lamb / (c * mu)))
+        Lq = Ls - (lamb / mu)
+        Ls_values.append(Ls)
+        Lq_values.append(Lq)
+
+    # Create the plot
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(x=rho_values, y=Ls_values, mode='lines', name='Ls'))
+    fig.add_trace(go.Scatter(x=rho_values, y=Lq_values, mode='lines', name='Lq'))
+
+    fig.update_layout(
+        title="Ls and Lq over rho",
+        xaxis_title="rho",
+        yaxis_title="Value",
+        legend_title="Legend"
+    )
+
+    fig.show()
+
+"""
     p_k_array = []
     for k in range(1,5):
         p_k_array(i) = Pk(lamb, mu, k, c)
 
     fig =  px.histogram(x = range(1,5), y = p_k_array, title="distribuzione")
     fig.show()   
-
+"""
+    
 asyncio.run(main())
 
 

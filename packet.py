@@ -20,7 +20,7 @@ class Packet:
 
     def setDepartureTime(self, departure_time):
         self.departure_time = departure_time  - self.initial_time
-        self.service_time = self.departure_time - self.queue_time 
+        self.service_time = self.departure_time - self.queue_time - self.arrival_time
 
     # GETTERS #
     def getID(self):
