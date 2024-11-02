@@ -9,13 +9,15 @@ def P0(rho, c):
         temp3 = 1 / (1 - rho)
         res += temp1 + (temp2 * temp3)
         
-        if (k < c): 
+        k += 1
+        if (k >= c): 
             break
 
     return 1 / res 
 
-def Pk(lamb, mu, k, c):
-    P_0 = P0(math.pow(lamb / mu, k), c)
+
+def Pk(lamb, mu, k, c, rho):
+    P_0 = math.pow(P0(rho,c),k)
     if k <= c:
         return P_0 * (1 / math.factorial(k))
     else:
