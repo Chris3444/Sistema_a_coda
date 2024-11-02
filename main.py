@@ -55,9 +55,10 @@ def main():
 
     # Create the plot 
     time_plot = go.Figure()
-    for c in c_values:  
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}'))
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f'Wq, c = {c}'))
+    colors = ['blue', 'red', 'purple']  # Define a list of colors for different values of c
+    for idx, c in enumerate(c_values):
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}', line=dict(color=colors[idx])))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f'Wq, c = {c}', line=dict(color=colors[idx], dash='dash')))
 
     time_plot.update_layout(
         title="Ws and Wq over rho",
@@ -81,9 +82,10 @@ def main():
     
     # Create the plot
     packets_plot = go.Figure()
-    for c in c_values:  
-        packets_plot.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}'))
-        packets_plot.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}'))
+    colors = ['blue', 'red', 'purple']  # Define a list of colors for different values of c
+    for idx, c in enumerate(c_values):  
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}', line=dict(color=colors[idx])))
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}', line=dict(color=colors[idx], dash='dash')))
 
     packets_plot.update_layout(
         title="Ls and Lq over rho",
