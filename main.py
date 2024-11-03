@@ -1,6 +1,7 @@
 # EXTERNAL LIBRARY #
 from numpy import random
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import unicodeit
 
 # CUSTOM LIBRARY #
@@ -64,7 +65,7 @@ def main():
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
-    time_plot.show()
+    #time_plot.show()
 
     # Ls AND Lq PLOT OVER RHO
     Ls_values = [[],[],[]]
@@ -110,8 +111,18 @@ def main():
         yaxis_title="Pk",
         legend_title="Legend"
     )
-    packet_queue_plot.show()
+    #packet_queue_plot.show()
 
+    multi_plot = make_subplots(rows=1, cols=2, subplot_titles=("Packets", "Time"), shared_yaxes=True)
+
+    for i in packets_plot.data:
+        multi_plot.add_trace(i, row=1, col=1)
+
+    for i in time_plot.data:
+        multi_plot.add_trace(i, row=1, col=2)
+
+    multi_plot.update_layout(title_text="Multiple Subplots with Titles", yaxis=dict(range=[0, 10]))
+    multi_plot.show()
 
 # TODO: implementare la visualizzazione dei risultati
 # Visualizzazione poissoniana
