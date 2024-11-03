@@ -8,7 +8,7 @@ import unicodeit
 from Probability_functions import *
 
 #TODO: Non è giusto Wq e Ws, son completamente sbagliati
-def main(): 
+def static(): 
     k = 0  
     lamb = 13.89 #(ms)                                   # average arrival rate
     mu = 16.6  #(ms)                                   # average service rate
@@ -61,7 +61,7 @@ def main():
 
     time_plot.update_layout(
         xaxis_title=unicodeit.replace("\\rho"),  # Use unicode to display the greek letter rho
-        yaxis_title="Value",
+        yaxis_title=unicodeit.replace("\\muW_s,\\muWq"),
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
@@ -88,7 +88,7 @@ def main():
     packets_plot.update_layout(
         title="Ls and Lq over rho",
         xaxis_title="rho",
-        yaxis_title="Value",
+        yaxis_title=unicodeit.replace("Ls, Lq"),
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
@@ -122,13 +122,20 @@ def main():
         multi_plot.add_trace(i, row=1, col=2)
 
     multi_plot.update_layout(title_text="Multiple Subplots with Titles", yaxis=dict(range=[0, 10]))
-    multi_plot.show()
+    #multi_plot.show()
 
-# TODO: implementare la visualizzazione dei risultati
-# Visualizzazione poissoniana
-#    fig =  px.histogram(test, title="distribuzione")
-#    fig.show()    
+    poisson = random.poisson(mu, 10000)
+    packet_distribution = go.Figure()
+    packet_distribution.add_trace(go.Histogram(x=poisson, histnorm='probability'))
+    packet_distribution.update_layout(
+        title="Poisson distribution",
+        xaxis_title="Packets",
+        yaxis_title="Probability"
+    )
+
+    packet_distribution.show()
+
+    return [packet_distribution, packets_plot, time_plot, packet_queue_plot]
 
 
-if __name__ == "__main__":
-    main()
+STATIC_RESULTS = static()

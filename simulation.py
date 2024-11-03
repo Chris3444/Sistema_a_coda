@@ -10,9 +10,7 @@ import numpy as np
 # CUSTOM LIBRARY #
 from Probability_functions import *
 
-# GLOBAL VARIABLES #
-
-
+# MEDIAN TIME FUNCTIONS #
 def getMedianTime(packet_array):
     tot_time = 0
     for packet in packet_array:
@@ -25,6 +23,16 @@ def getMediumQueueTime(packet_array):
         tot_time += packet.getQueueTime()
     return tot_time/len(packet_array) if  len(packet_array) > 0 else 0
 
+async def getMediumPacket(queue,packet_all):
+    while True:
+        await asyncio.sleep(1)
+        packet_all["n_packet_sistem"].append(len(packet_all["packet_array_t"]))
+        packet_all["n_packet_queue_t"].append(queue.qsize())
+        #n_packet_sistem.append(len(packet_array_t))
+        #n_packet_queue_t.append(queue.qsize())
+
+
+# QUEUE SYSTEM DEFINITION #
 #Producer for mu packet per second
 async def packet_creator(y,queue,packet_all):
     initial_time = time.time()
@@ -57,10 +65,10 @@ async def server(mu, server_id, queue,packet_all):
         #packet_array.append(packet)
         #packet_array_t.pop()
 
-
+# SIMULATIONS HANDLING #
 def get_metrics(packet_all):
 
-    P_queue = packet_all["waiting_arrivals"] / len(packet_all["packet_array"]) if  len(packet_all["packet_array"]) > 0 else 0
+    #P_queue = packet_all["waiting_arrivals"] / len(packet_all["packet_array"]) if  len(packet_all["packet_array"]) > 0 else 0
     #P_queue = waiting_arrivals / len(packet_array) if  len(packet_array) > 0 else 0
     Lq = getMediumQueueTime(packet_all["packet_array"])
     Ls = getMedianTime(packet_all["packet_array"])
@@ -74,17 +82,17 @@ def get_metrics(packet_all):
     for n in packet_all["n_packet_sistem"]:
         packet_tot += n
     Ws = packet_tot / len(packet_all["n_packet_sistem"]) if  len(packet_all["n_packet_sistem"]) > 0 else 0
+    # Calculate Pk for k = 1, 2, 3, 4, 5
+    pk_counts = {k: 0 for k in range(6)}
+    total_entries = len(packet_all["n_packet_sistem"])
+    for count in packet_all["n_packet_sistem"]:
+        if count in pk_counts:
+            pk_counts[count] += 1
 
-    return {"Lq": Lq, "Ls": Ls, "Wq": Wq, "Ws": Ws, "P_queue": P_queue}
+    # Convert counts to probabilities
+    pK = {k: pk_counts[k] / total_entries for k in pk_counts}
 
-
-async def getMediumPacket(queue,packet_all):
-    while True:
-        await asyncio.sleep(1)
-        packet_all["n_packet_sistem"].append(len(packet_all["packet_array_t"]))
-        packet_all["n_packet_queue_t"].append(queue.qsize())
-        #n_packet_sistem.append(len(packet_array_t))
-        #n_packet_queue_t.append(queue.qsize())
+    return {"Lq": Lq, "Ls": Ls, "Wq": Wq, "Ws": Ws, "Pk": pK}
 
 
 async def createSim(lamb, mu, c, runtime):
@@ -135,9 +143,18 @@ async def createSims(mu,c_values,rho_values,repetitions,runtime):
         # Separate each metric and calculate the median across repetitions
         Lq_values = [metrics["Lq"] for metrics in metrics_list]
         Ls_values = [metrics["Ls"] for metrics in metrics_list]
-        Wq_values = [metrics["Wq"] for metrics in metrics_list]
-        Ws_values = [metrics["Ws"] for metrics in metrics_list]
-        P_queue_values = [metrics["P_queue"] for metrics in metrics_list]
+        Wq_values = [metrics["Wq"]*mu*c for metrics in metrics_list]
+        Ws_values = [metrics["Ws"]*mu*c for metrics in metrics_list]
+        Pk_values = [metrics["Pk"] for metrics in metrics_list]
+        # Populate Pk_aggregated with each Pk value from Pk_values
+        Pk_aggregated = {k: [] for k in range(6)}
+        for pk_dict in Pk_values:
+            for k, value in pk_dict.items():
+                Pk_aggregated[k].append(value)
+
+        # Calculate median for each k
+        Pk_median = {k: np.median(Pk_aggregated[k]) for k in Pk_aggregated}
+
         
         # Calculate and store median values for each metric
         results[c][rho] = {
@@ -145,20 +162,27 @@ async def createSims(mu,c_values,rho_values,repetitions,runtime):
             "Ls": np.median(Ls_values),
             "Wq": np.median(Wq_values),
             "Ws": np.median(Ws_values),
-            "P_queue": np.median(P_queue_values),
+            "Pk": Pk_median,
         }
     tasks = [run_for_c_and_rho(c, rho) for c in c_values for rho in rho_values]
     await asyncio.gather(*tasks)
     return results
 
 
+# PLOTTING #
 def plotResults(results, rho_values, c_values):
     # Prepare data for P_queue bar chart
     p_queue_data = []
+    
     for c in c_values:
-        p_queue_values = [results[c][rho]["P_queue"] for rho in rho_values]
-        p_queue_data.append(go.Bar(name=f'Servers = {c}', x=rho_values, y=p_queue_values))
-    # Prepare data for Lq and Ls scatter plot
+       
+        p_queue_values = [results[c][0.5]["Pk"] for k in results[c][0.5]["Pk"]]
+        pk_data= results[c][0.5]["Pk"]  # Convert dict_keys to a list
+        x_values = list(pk_data.keys())  # k values
+        y_values = list(pk_data.values())  # Pk values for the current `c`
+        # Add a bar for this server configuration
+        p_queue_data.append(go.Bar(name=f'Servers = {c}', x=x_values, y=y_values))
+        # Prepare data for Lq and Ls scatter plot
     lq_ls_data = []
     for c in c_values:
         lq_values = [results[c][rho]["Lq"] for rho in rho_values]
@@ -181,9 +205,9 @@ def plotResults(results, rho_values, c_values):
     # Create the bar chart for P_queue
     fig1 = go.Figure(data=p_queue_data)
     fig1.update_layout(
-        title="Probability of Waiting (P_queue) vs Utilization (rho)",
-        xaxis_title="Utilization (rho)",
-        yaxis_title="P_queue",
+        title="Probability of Packets(Pk) in Packets (k)",
+        xaxis_title="Packets (k)",
+        yaxis_title="Pk",
         barmode='group'
     )
 
@@ -205,21 +229,23 @@ def plotResults(results, rho_values, c_values):
 
     # Show the plots
     fig1.show()
-    fig2.show()
-    fig3.show()
+    return [fig2,fig3]
 
 
+# MAIN #
 async def main():
     mu = 4 # (s) - packets/second           # average service rate
     c_values = [1,2,3]                               # number of servers
-    rho_values =[round(0.1*i,1) for i in range(1,10)]                              
-    results = await createSims(mu,c_values, rho_values,repetitions=10,runtime=60)
+    repetitions = 10
+    runtime = 60
+    rho_values = [round(0.01*i,1) for i in range(1,100)]                              
+    results = await createSims(mu,c_values, rho_values,repetitions,runtime)
     print("finished")
     for c in results:
         for rho in results[c]:
-            print(f"Servers: {c}, Utilization: {rho}, Metrics: {results[c][rho]}")
-    plotResults(results, rho_values, c_values)
-   
+            #print(f"Servers: {c}, Utilization: {rho}, Metrics: {results[c][rho]}")
+            hello = 0
+    figs = plotResults(results, rho_values, c_values)
 
 asyncio.run(main())
 
