@@ -1,10 +1,8 @@
 # EXTERNAL LIBRARY #
-import time      
 from numpy import random
-import plotly.express as px #? matplotlib 
-import asyncio #whatmickis (events & queue)
-
 import plotly.graph_objects as go
+import unicodeit
+
 # CUSTOM LIBRARY #
 from Probability_functions import *
 
@@ -57,12 +55,11 @@ def main():
     time_plot = go.Figure()
     colors = ['blue', 'red', 'purple']  # Define a list of colors for different values of c
     for idx, c in enumerate(c_values):
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}', line=dict(color=colors[idx])))
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f'Wq, c = {c}', line=dict(color=colors[idx], dash='dash')))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Wₛ, c = {c}', line=dict(color=colors[idx])))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f"W_q, c = {c}", line=dict(color=colors[idx], dash='dash')))
 
     time_plot.update_layout(
-        title="Ws and Wq over rho",
-        xaxis_title="rho",
+        xaxis_title=unicodeit.replace("\\rho"),  # Use unicode to display the greek letter rho
         yaxis_title="Value",
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
@@ -76,7 +73,7 @@ def main():
         for rho in rho_values:
             Lx = c * rho
             Lq = ErlangC(c, c*rho)  * (rho/(1-rho))
-            Ls = ((ErlangC(c, c*rho) / (1 - rho)) + c)*rho                                    # average time a packet spends in the queue
+            Ls = ((ErlangC(c, c*rho) / (1 - rho)) + c)*rho  # average time a packet spends in the queue
             Ls_values[c-1].append(Ls)
             Lq_values[c-1].append(Lq)
     
@@ -94,10 +91,10 @@ def main():
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
-    packets_plot.show()
+    #packets_plot.show()
 
     # Pk PLOT OVER K
-    fig3 = go.Figure()
+    packet_queue_plot = go.Figure()
     k = 5
     pK_values = [[],[],[]]
     for c in c_values:
@@ -105,15 +102,15 @@ def main():
             pK_values[c-1].append(Pk(i, c, 0.5))   
         
     for i in range(3):  
-        fig3.add_trace(go.Bar(x=list(range(k + 1)), y= pK_values[i], name=f'P_queue, c = {i+1}'))
+        packet_queue_plot.add_trace(go.Bar(x=list(range(k + 1)), y= pK_values[i], name=f'P_queue, c = {i+1}'))
 
-    fig3.update_layout(
+    packet_queue_plot.update_layout(
         title="Pk over k",
         xaxis_title="k",
         yaxis_title="Pk",
         legend_title="Legend"
     )
-    #fig3.show()
+    packet_queue_plot.show()
 
 
 # TODO: implementare la visualizzazione dei risultati

@@ -4,24 +4,21 @@ def P0(rho, c):
     res = 0
     k = 0
     while(True):
-        temp1 = math.pow(c*rho, k) / math.factorial(k)
-        temp2 = math.pow(c*rho, c) / math.factorial(c) 
-        temp3 = 1 / (1 - rho)
-        res += temp1 + (temp2 * temp3)
+        res += (math.pow(c*rho, k) / math.factorial(k)) + (math.pow(c*rho, c) / (math.factorial(c) * (1 - rho)))
         
         k += 1
-        if (k >= c - 1): 
+        if (k > (c - 1)): 
             break
 
-    return 1 / res 
+    return (1 / res)
 
 
 def Pk(k, c, rho):
     P_0 = P0(rho, c)
     if k <= c:
-        return P_0 * math.pow(c * rho, k) * (1 / math.factorial(k))
+        return (P_0 * math.pow(c * rho, k)) / math.factorial(k)
     else:
-        return P_0 * math.pow(c * rho, k) * (1 / math.factorial(c) * math.pow(c, k-c))
+        return (P_0 * math.pow(c * rho, k)) / (math.factorial(c) * math.pow(c, k-c))
     
 
 # implementazione della C di Erlang
