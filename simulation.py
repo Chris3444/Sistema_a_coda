@@ -236,8 +236,8 @@ async def main():
     c_values = [1,2,3]                                 # number of servers
     repetitions = 10
     runtime = 60 * 20
-    # rho values from 0.01 to 0.99
-    rho_values = [round(0.01*i,1) for i in range(1,100)]                              
+   
+    rho_values = [round(0.01*i,1) for i in range(1,100)]    # rho values from 0.01 to 0.99                     
     results = await createSims(mu,c_values, rho_values,repetitions,runtime)
     return plotResults(results, rho_values, c_values)
 
