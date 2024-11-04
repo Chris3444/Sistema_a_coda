@@ -7,7 +7,7 @@ import unicodeit
 # CUSTOM LIBRARY #
 from Probability_functions import *
 
-#TODO: Non è giusto Wq e Ws, son completamente sbagliati
+
 def static(): 
     k = 0  
     lamb = 13.89 #(ms)                                   # average arrival rate
@@ -56,12 +56,12 @@ def static():
     time_plot = go.Figure()
     colors = ['blue', 'red', 'purple']  # Define a list of colors for different values of c
     for idx, c in enumerate(c_values):
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Wₛ, c = {c}', line=dict(color=colors[idx])))
-        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f"W_q, c = {c}", line=dict(color=colors[idx], dash='dash')))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Ws_values[c-1], mode='lines', name=f'Ws, c = {c}', line=dict(color=colors[idx]), legendgroup='group1', legendgrouptitle_text='STATIC'))
+        time_plot.add_trace(go.Scatter(x=rho_values, y=Wq_values[c-1], mode='lines', name=f"Wq, c = {c}", line=dict(color=colors[idx], dash='dash'), legendgroup='group1', legendgrouptitle_text='STATIC'))
 
     time_plot.update_layout(
         xaxis_title=unicodeit.replace("\\rho"),  # Use unicode to display the greek letter rho
-        yaxis_title=unicodeit.replace("\\muW_s,\\muWq"),
+        yaxis_title=unicodeit.replace("\\muWs,\\muWq"),
         legend_title="Legend",
         yaxis=dict(range=[0, 10])  # Set the y-axis range to have a maximum value of 10
     )
@@ -82,8 +82,8 @@ def static():
     packets_plot = go.Figure()
     colors = ['blue', 'red', 'purple']  # Define a list of colors for different values of c
     for idx, c in enumerate(c_values):  
-        packets_plot.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}', line=dict(color=colors[idx])))
-        packets_plot.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}', line=dict(color=colors[idx], dash='dash')))
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Ls_values[c-1], mode='lines', name=f'Ls, c = {c}', line=dict(color=colors[idx]), legendgroup='group1', legendgrouptitle_text='STATIC'))
+        packets_plot.add_trace(go.Scatter(x=rho_values, y=Lq_values[c-1], mode='lines', name=f'Lq, c = {c}', line=dict(color=colors[idx], dash='dash'), legendgroup='group1', legendgrouptitle_text='STATIC'))
 
     packets_plot.update_layout(
         title="Ls and Lq over rho",
@@ -103,7 +103,7 @@ def static():
             pK_values[c-1].append(Pk(i, c, 0.5))   
         
     for i in range(3):  
-        packet_queue_plot.add_trace(go.Bar(x=list(range(k + 1)), y= pK_values[i], name=f'P_queue, c = {i+1}'))
+        packet_queue_plot.add_trace(go.Bar(x=list(range(k + 1)), y= pK_values[i], name=f'P_queue, c = {i+1}', legendgroup='group1', legendgrouptitle_text='STATIC'))
 
     packet_queue_plot.update_layout(
         title="Pk over k",
@@ -113,29 +113,22 @@ def static():
     )
     #packet_queue_plot.show()
 
-    multi_plot = make_subplots(rows=1, cols=2, subplot_titles=("Packets", "Time"), shared_yaxes=True)
-
-    for i in packets_plot.data:
-        multi_plot.add_trace(i, row=1, col=1)
-
-    for i in time_plot.data:
-        multi_plot.add_trace(i, row=1, col=2)
-
-    multi_plot.update_layout(title_text="Multiple Subplots with Titles", yaxis=dict(range=[0, 10]))
-    #multi_plot.show()
 
     poisson = random.poisson(mu, 10000)
     packet_distribution = go.Figure()
     packet_distribution.add_trace(go.Histogram(x=poisson, histnorm='probability'))
     packet_distribution.update_layout(
-        title="Poisson distribution",
+        title="Poisson distribution of packets",
+        title_x=0.5, 
+        title_font=dict(size=22),
         xaxis_title="Packets",
         yaxis_title="Probability"
     )
 
-    packet_distribution.show()
+    #packet_distribution.show()
 
-    return [packet_distribution, packets_plot, time_plot, packet_queue_plot]
+    return {"packet_queue_plot": packet_queue_plot, "packets_plot": packets_plot, "time_plot": time_plot, "packet_distribution": packet_distribution}
 
 
 STATIC_RESULTS = static()
+

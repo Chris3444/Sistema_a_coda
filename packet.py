@@ -6,7 +6,7 @@ class Packet:
     queue_time = 0
     service_time = 0
     departure_time = 0
-    initial_time = 0 # scegliere definitivamente dove tenere l'initial time
+    initial_time = 0 # Take the initial time of the simulation
     
     # CONSTRUCTOR #
     def __init__(self, id, initial_time):
